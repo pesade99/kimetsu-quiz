@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>귀멸의 칼날 귀살대 선별 퀴즈</title>
+  
+  <!-- Firebase SDK (실시간 데이터 동기화) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --bg-body: #07090e;
+      --bg-mobile: #11151f;
+      --bg-card: #181e2b;
+      --bg-card-hover: #222a3d;
+      --accent-red: #d32f2f;
+      --accent-crimson: #ff334b;
+      --accent-gold: #ffb300;
+      --accent-cyan: #00e5ff;
+      --accent-green: #00e676;
+      --text-main: #f0f3f8;
+      --text-sub: #9ca3af;
+      --border-color: #262f42;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 0;
+      margin: 0;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100dvh;
+      background-color: var(--bg-mobile);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* 상단 헤더 */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(17, 21, 31, 0.96);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-logo {
+      font-size: 0.98rem;
+      font-weight: 900;
+      color: var(--accent-gold);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-badge {
+      font-size: 0.65rem;
+      background: var(--accent-red);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .header-tools {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-header {
+      background: #1f2738;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      transition: background 0.15s ease;
+    }
+
+    .btn-header:active {
+      background: #2a354c;
+      transform: scale(0.96);
+    }
+
+    /* 제작자 및 유튜브 배너 */
+    .creator-banner {
+      background: linear-gradient(135deg, rgba(211, 47, 47, 0.25), rgba(255, 179, 0, 0.15));
+      border-bottom: 1px solid rgba(255, 179, 0, 0.35);
+      padding: 9px 14px;
+      text-align: center;
+    }
+
+    .creator-author {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .creator-author span {
+      color: var(--accent-gold);
+    }
+
+    .creator-sub {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #ff5252;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    /* 메인 콘텐츠 */
+    .content-area {
+      flex: 1;
+      padding: 16px 16px 24px 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+      width: 100%;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 시작 화면 */
+    .intro-banner {
+      text-align: center;
+      padding: 12px 0 18px 0;
+    }
+
+    .intro-banner h1 {
+      font-size: 1.65rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 10px rgba(255, 51, 75, 0.35);
+    }
+
+    .intro-banner p {
+      font-size: 0.86rem;
+      color: var(--text-sub);
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .mode-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0 22px 0;
+    }
+
+    .mode-item {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 13px 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+
+    .mode-item:active {
+      transform: scale(0.98);
+    }
+
+    .mode-item.selected {
+      border-color: var(--accent-crimson);
+      background: #202738;
+      box-shadow: 0 0 12px rgba(255, 51, 75, 0.25);
+    }
+
+    .mode-item h3 {
+      font-size: 0.95rem;
+      font-weight: 850;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+
+    .mode-item p {
+      font-size: 0.76rem;
+      color: var(--text-sub);
+    }
+
+    .mode-pill {
+      background: rgba(255, 179, 0, 0.15);
+      color: var(--accent-gold);
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 5px 9px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    .btn-action {
+      width: 100%;
+      min-height: 52px;
+      background: linear-gradient(135deg, var(--accent-crimson), var(--accent-red));
+      border: none;
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(211, 47, 47, 0.35);
+      transition: transform 0.1s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .btn-action:active {
+      transform: scale(0.98);
+      filter: brightness(0.9);
+    }
+
+    /* 퀴즈 화면 */
+    .quiz-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .status-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status-label {
+      font-size: 0.68rem;
+      color: var(--text-sub);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .status-num {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .status-combo {
+      color: var(--accent-gold);
+    }
+
+    .timer-track {
+      width: 100%;
+      height: 6px;
+      background: #202738;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .timer-fill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-crimson));
+      transition: width 0.1s linear;
+    }
+
+    .question-card {
+      margin-bottom: 16px;
+    }
+
+    .category-tag {
+      display: inline-block;
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--accent-cyan);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 5px;
+      margin-bottom: 8px;
+    }
+
+    .question-title {
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .options-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .option-button {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 13px 14px;
+      color: var(--text-main);
+      font-size: 0.94rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 52px;
+      line-height: 1.35;
+      word-break: keep-all;
+      transition: all 0.15s ease;
+    }
+
+    .option-button:active:not(:disabled) {
+      transform: scale(0.98);
+      background: #222b3d;
+    }
+
+    .option-index {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #263044;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .option-button.correct {
+      background: rgba(0, 230, 118, 0.15) !important;
+      border-color: var(--accent-green) !important;
+      color: #fff !important;
+    }
+
+    .option-button.correct .option-index {
+      background: var(--accent-green);
+      color: #07090e;
+    }
+
+    .option-button.wrong {
+      background: rgba(255, 51, 75, 0.15) !important;
+      border-color: var(--accent-crimson) !important;
+      color: #fff !important;
+    }
+
+    .option-button.wrong .option-index {
+      background: var(--accent-crimson);
+      color: #fff;
+    }
+
+    .explanation-card {
+      display: none;
+      background: #1b2230;
+      border-left: 4px solid var(--accent-gold);
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .exp-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .exp-body {
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    /* 결과 및 명예의 전당 */
+    .result-header-box {
+      text-align: center;
+      padding: 10px 0 14px 0;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .grade-chip {
+      display: inline-block;
+      font-size: 0.92rem;
+      font-weight: 900;
+      padding: 4px 14px;
+      border-radius: 20px;
+      background: rgba(255, 179, 0, 0.18);
+      color: var(--accent-gold);
+      border: 1px solid var(--accent-gold);
+      margin-bottom: 8px;
+    }
+
+    .result-score-big {
+      font-size: 2.7rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.05;
+      margin-bottom: 10px;
+      text-shadow: 0 4px 16px rgba(0, 229, 255, 0.3);
+    }
+
+    .result-mini-grid {
+      display: flex;
+      justify-content: space-around;
+      background: #161c28;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      color: var(--text-sub);
+    }
+
+    .result-mini-grid strong {
+      color: #fff;
+      display: block;
+      font-size: 0.92rem;
+      margin-top: 2px;
+    }
+
+    .entry-card {
+      background: #171d29;
+      border: 1.5px solid var(--accent-gold);
+      border-radius: 12px;
+      padding: 13px;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .entry-card h4 {
+      font-size: 0.95rem;
+      color: var(--accent-gold);
+      margin-bottom: 3px;
+    }
+
+    .entry-card p {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      margin-bottom: 11px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-name {
+      flex: 1;
+      height: 44px;
+      background: #0f131c;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0 12px;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .input-name:focus {
+      border-color: var(--accent-gold);
+    }
+
+    .btn-submit-name {
+      height: 44px;
+      background: var(--accent-gold);
+      color: #07090e;
+      border: none;
+      padding: 0 15px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-alert {
+      color: var(--accent-crimson);
+      font-size: 0.74rem;
+      font-weight: 700;
+      margin-top: 7px;
+      display: none;
+    }
+
+    .ranking-wrap {
+      margin-bottom: 18px;
+    }
+
+    .ranking-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 9px;
+    }
+
+    .ranking-title-row h3 {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .ranking-badge {
+      font-size: 0.68rem;
+      color: var(--accent-cyan);
+      background: rgba(0, 229, 255, 0.12);
+      border: 1px solid var(--accent-cyan);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .rank-table-box {
+      width: 100%;
+      background: #111622;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      max-height: 270px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .rank-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .rank-table th {
+      background: #181f2d;
+      padding: 9px 10px;
+      color: var(--text-sub);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-align: left;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .rank-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #1a2130;
+      color: #fff;
+    }
+
+    .rank-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rank-table tr.highlight {
+      background: rgba(255, 179, 0, 0.15);
+      font-weight: 800;
+    }
+
+    .rank-pos {
+      font-weight: 900;
+      width: 34px;
+    }
+    .rank-pos.gold { color: #ffd700; }
+    .rank-pos.silver { color: #cfd8dc; }
+    .rank-pos.bronze { color: #ffab91; }
+
+    .rank-grade-pill {
+      font-size: 0.68rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #222b3c;
+      color: var(--accent-cyan);
+      font-weight: 800;
+    }
+
+    .mobile-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(70px);
+      background: rgba(22, 28, 40, 0.96);
+      border: 1px solid var(--accent-gold);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 24px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+      transition: all 0.25s ease;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .mobile-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+    <!-- 앱 헤더 -->
+    <header class="app-header">
+      <div class="header-logo">
+        <span>귀살대 선별시험</span>
+        <span class="header-badge">정발판</span>
+      </div>
+      <div class="header-tools">
+        <button class="btn-header" id="btnSound">소리 켬</button>
+      </div>
+    </header>
+
+    <!-- 제작자 및 유튜브 배너 -->
+    <div class="creator-banner">
+      <div class="creator-author">만든사람 : <span>망칠이_뭉칠이</span></div>
+      <div class="creator-sub">유튜브 구독 좋아요 부탁해</div>
+    </div>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="content-area">
+      
+      <!-- 1. 시작 화면 -->
+      <section id="screenStart" class="screen active">
+        <div class="intro-banner">
+          <h1>귀살대 선별 퀴즈</h1>
+          <p>한국 정발 단행본 공식 설정 완벽 고증<br>문제를 풀고 전 세계 실시간 상위 20인에 이름을 새기십시오!</p>
+        </div>
+
+        <div class="mode-list">
+          <div class="mode-item selected" data-count="10">
+            <div>
+              <h3>일반 임무 (10문항)</h3>
+              <p>핵심 설정 위주의 신속 선별 코스</p>
+            </div>
+            <div class="mode-pill">10문제</div>
+          </div>
+          <div class="mode-item" data-count="20">
+            <div>
+              <h3>최종선별 (20문항)</h3>
+              <p>호흡과 혈귀술을 종합 검증하는 정규 코스</p>
+            </div>
+            <div class="mode-pill">20문제</div>
+          </div>
+          <div class="mode-item" data-count="30">
+            <div>
+              <h3>주의 시련 (30문항 전체)</h3>
+              <p>공식 설정집의 모든 지식을 다루는 최고 난도</p>
+            </div>
+            <div class="mode-pill">30문제</div>
+          </div>
+        </div>
+
+        <button class="btn-action" id="btnStartQuiz">선별 시험 시작</button>
+      </section>
+
+      <!-- 2. 퀴즈 화면 -->
+      <section id="screenQuiz" class="screen">
+        <div class="quiz-status-row">
+          <div class="status-box">
+            <span class="status-label">진행도</span>
+            <span class="status-num" id="hudProgress">1 / 10</span>
+          </div>
+          <div class="status-box" style="align-items: center;">
+            <span class="status-label">연속 정답</span>
+            <span class="status-num status-combo" id="hudCombo">0연속</span>
+          </div>
+          <div class="status-box" style="align-items: flex-end;">
+            <span class="status-label">점수</span>
+            <span class="status-num" id="hudScore">0</span>
+          </div>
+        </div>
+
+        <div class="timer-track">
+          <div class="timer-fill" id="timerBar"></div>
+        </div>
+
+        <div class="question-card">
+          <span class="category-tag" id="questionCategory">호흡과 검술</span>
+          <h2 class="question-title" id="questionText">질문 텍스트</h2>
+        </div>
+
+        <div class="options-stack" id="optionsContainer"></div>
+
+        <div class="explanation-card" id="feedbackBox">
+          <div class="exp-title" id="feedbackTitle">정답입니다!</div>
+          <div class="exp-body" id="feedbackDesc">해설 내용</div>
+        </div>
+
+        <button class="btn-action" id="btnNext" style="display: none; margin-top: auto;">다음 문제로 이동</button>
+      </section>
+
+      <!-- 3. 결과 및 랭킹 화면 -->
+      <section id="screenResult" class="screen">
+        <div class="result-header-box">
+          <div class="grade-chip" id="resultGradeBadge">귀살대 계급: 판정중</div>
+          <div class="result-score-big" id="resultFinalScore">0</div>
+          <div class="result-mini-grid">
+            <div>정답 수<strong id="resultCorrectCount">0</strong></div>
+            <div>정답률<strong id="resultAccuracy">0%</strong></div>
+            <div>최대 콤보<strong id="resultMaxCombo">0회</strong></div>
+          </div>
+        </div>
+
+        <div class="entry-card" id="arcadeEntryArea">
+          <h4>오락실 명예의 전당 등록</h4>
+          <p>모든 참가자가 함께 보는 실시간 랭킹판에 기록됩니다.</p>
+          <div class="input-row">
+            <input type="text" id="playerNameInput" class="input-name" maxlength="8" placeholder="이름 (최대 8자)" autocomplete="off">
+            <button class="btn-submit-name" id="btnSubmitRank">기록</button>
+          </div>
+          <div class="filter-alert" id="filterWarningMsg">비속어 및 부적절한 표현은 등록할 수 없습니다.</div>
+        </div>
+
+        <div class="ranking-wrap">
+          <div class="ranking-title-row">
+            <h3>명예의 전당 (상위 20인)</h3>
+            <span class="ranking-badge">온라인 실시간 동기화</span>
+          </div>
+          <div class="rank-table-box">
+            <table class="rank-table">
+              <thead>
+                <tr>
+                  <th style="width: 40px;">순위</th>
+                  <th>이름</th>
+                  <th>계급</th>
+                  <th style="text-align: right;">점수</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <button class="btn-action" id="btnRestart" style="margin-top: auto;">다시 도전하기</button>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="mobile-toast" id="toastMsg">알림</div>
+
+  <script>
+    /* =====================================================================
+       ★ [중요] 파이어베이스(Firebase) 설정값 입력란
+       콘솔에서 발급받은 본인의 설정을 여기에 붙여넣으세요.
+       ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAuEmsUmOv5cjXnSW9sj3aS4t5nar7fMDo",
+  authDomain: "kimetsu-quiz-65b93.firebaseapp.com",
+  databaseURL: "https://kimetsu-quiz-65b93-default-rtdb.firebaseio.com",
+  projectId: "kimetsu-quiz-65b93",
+  storageBucket: "kimetsu-quiz-65b93.firebasestorage.app",
+  messagingSenderId: "565371947608",
+  appId: "1:565371947608:web:4c6d362fcdc4e12eb3982d"
+};
+
+    let db = null;
+    let isFirebaseReady = false;
+
+    // 파이어베이스 초기화
+    try {
+      if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        isFirebaseReady = true;
+      }
+    } catch (e) {
+      console.warn("Firebase 연결 실패:", e);
+    }
+
+    /* =====================================================================
+       1. 정발판 공식 고증 30문항 원본 데이터
+       ===================================================================== */
+    const QUIZ_DATABASE = [
+      {
+        category: "인물과 스승",
+        q: "카마도 탄지로가 토미오카 기유의 편지를 받고 찾아간 첫 번째 스승이자 전직 수주는 누구인가?",
+        options: ["우로코다키 사콘지", "쿠와지마 지고로", "렌고쿠 신쥬로", "테치카와하라"],
+        answerText: "우로코다키 사콘지",
+        exp: "탄지로는 전직 수주인 우로코다키 사콘지 밑에서 사기리 산의 혹독한 수련을 거쳐 물의 호흡을 터득했습니다."
+      },
+      {
+        category: "귀살대 장비",
+        q: "혈귀를 베어 없앨 수 있는 일륜도의 원료가 되는 두 가지 광물은?",
+        options: ["성철원석과 성진사", "비취강과 흑연사", "진홍철과 백은석", "유성철과 벽옥사"],
+        answerText: "성철원석과 성진사",
+        exp: "정발 단행본 기준, 일륜도는 태양빛을 듬뿍 흡수한 성철원석과 성진사를 재료로 만들어집니다."
+      },
+      {
+        category: "최종선별",
+        q: "귀살대 입단 시험인 최종선별이 열리며, 혈귀가 싫어하는 등꽃이 일 년 내내 피어있는 산은?",
+        options: ["후지카사네 산", "사기리 산", "나타구모 산", "요시와라 산"],
+        answerText: "후지카사네 산",
+        exp: "최종선별은 등꽃이 1년 내내 만발하여 혈귀가 도망치지 못하는 후지카사네 산에서 7일간 생존하는 시험입니다."
+      },
+      {
+        category: "호흡과 검술",
+        q: "토미오카 기유가 기존 물의 호흡 열 가지 형에 만족하지 않고 독자적으로 창안한 제11형은?",
+        options: ["잔잔한 물결", "유유무늬", "비틀린 소용돌이", "가뭄의 단비"],
+        answerText: "잔잔한 물결",
+        exp: "토미오카 기유는 자신의 간합 안에 들어오는 혈귀의 공격을 전부 무효화하는 물의 호흡 제11형 잔잔한 물결을 창안했습니다."
+      },
+      {
+        category: "호흡과 검술",
+        q: "무한열차에서 염주 렌고쿠 쿄쥬로가 상현 3 아카자를 상대로 펼친 화염의 호흡 궁극오의는?",
+        options: ["제9형 연옥", "제5형 염호", "제1형 시화운화", "제4형 성염의 파도"],
+        answerText: "제9형 연옥",
+        exp: "렌고쿠 쿄쥬로가 자신의 모든 투기를 쏟아부어 돌진한 화염의 호흡 궁극오의는 제9형 연옥입니다."
+      },
+      {
+        category: "혈귀와 시조",
+        q: "혈귀의 시조 키부츠지 무잔이 완전무결한 불사의 몸이 되어 태양을 극복하기 위해 천 년 동안 찾아 헤맨 것은?",
+        options: ["푸른 피안화", "붉은 영지초", "백색 등꽃", "황금 연꽃"],
+        answerText: "푸른 피안화",
+        exp: "키부츠지 무잔은 자신을 혈귀로 만든 의사의 약재 중 하나인 푸른 피안화를 찾기 위해 끝없이 혈귀를 양산했습니다."
+      },
+      {
+        category: "호흡과 검술",
+        q: "아가츠마 젠이츠가 극한의 공포 속에서 기절했을 때 완벽하게 구사하는 번개의 호흡 기술은?",
+        options: ["제1형 벽력일섬", "제2형 도혼", "제3형 취문성뢰", "제4형 원뢰"],
+        answerText: "제1형 벽력일섬",
+        exp: "젠이츠는 다른 형은 쓰지 못하지만 오직 번개의 호흡 제1형 벽력일섬만을 극한으로 연마하여 신속의 경지에 올랐습니다."
+      },
+      {
+        category: "귀살대 신체능력",
+        q: "귀살대 대원들이 하루 24시간 내내 호흡을 유지하여 기초 체력과 전투력을 비약적으로 끌어올리는 특수 호흡법은?",
+        options: ["전집중 상중", "전집중 극의", "항상호흡", "심폐극대화"],
+        answerText: "전집중 상중",
+        exp: "정발판 기준, 잠자는 동안에도 지속적으로 전집중 호흡 상태를 유지하는 것을 전집중 상중이라고 부릅니다."
+      },
+      {
+        category: "주와 전투방식",
+        q: "충주 코쵸우 시노부가 혈귀의 목을 벨 완력이 부족함에도 주가 될 수 있었던 독창적인 공격 수단은?",
+        options: ["등꽃 독을 이용한 연속 찌르기", "화염 폭약 투척술", "수면 침술 제압", "초고주파 음파 충격"],
+        answerText: "등꽃 독을 이용한 연속 찌르기",
+        exp: "코쵸우 시노부는 칼끝으로 혈귀의 체내에 치명적인 등꽃 독을 직접 주입하여 절명시키는 독자적인 검술을 창안했습니다."
+      },
+      {
+        category: "호흡과 검술",
+        q: "하주 토키토 무이치로가 상현 5 굣코를 쓰러뜨릴 때 선보인 안개의 호흡 고유 창안 기술은?",
+        options: ["제7형 몽롱", "제4형 이류베기", "제5형 안개구름 바다", "제6형 달의 안개 소멸"],
+        answerText: "제7형 몽롱",
+        exp: "토키토 무이치로가 스스로 만들어낸 안개의 호흡 제7형 몽롱은 극단적인 완급조절로 적을 농락하는 기술입니다."
+      },
+      {
+        category: "호흡과 감각",
+        q: "하시비라 이노스케가 사용하는 짐승의 호흡 중, 피부의 초감각으로 원거리 적의 기운을 읽어내는 기술은?",
+        options: ["제7형 공간식각", "제5형 미친 듯이 찢기", "제9형 연장 관통", "제3형 뜯어 찢기"],
+        answerText: "제7형 공간식각",
+        exp: "이노스케는 온몸의 촉각을 곤두세워 공기의 미세한 흔들림을 포착하는 짐승의 호흡 제7형 공간식각을 사용합니다."
+      },
+      {
+        category: "혈귀와 혈귀술",
+        q: "십이귀월 중 상현 3 아카자가 체술과 나침반 형상의 술식을 발동할 때 외치는 고유 혈귀술 명칭은?",
+        options: ["파괴살", "나침투권", "귀살쇄", "무한격파"],
+        answerText: "파괴살",
+        exp: "아카자는 투기를 감지하는 나침을 전개하고 정밀한 타격을 가하는 파괴살 혈귀술을 사용합니다."
+      },
+      {
+        category: "호흡의 기원",
+        q: "상현 1 코쿠시보가 귀살대 검사 시절부터 갈고닦아 혈귀가 된 후에도 사용하는 고유 호흡은?",
+        options: ["달의 호흡", "어둠의 호흡", "밤의 호흡", "성좌의 호흡"],
+        answerText: "달의 호흡",
+        exp: "코쿠시보는 해의 호흡의 파생이자 변형인 달의 호흡을 사용하며 무수한 초승달 칼날을 방출합니다."
+      },
+      {
+        category: "귀살대 조직",
+        q: "귀살대에서 당주 바로 아래 위치하며 부대를 통솔하는 최고위 정예 검사 9명을 통칭하는 명칭은?",
+        options: ["주", "기둥", "십이검객", "사령관"],
+        answerText: "주",
+        exp: "한국 정발 단행본 공식 명칭 기준 최상위 정예 무사는 '주'로 통칭됩니다."
+      },
+      {
+        category: "특수 체질",
+        q: "시나즈가와 겐야가 호흡을 쓰지 못함에도 불구하고 전선에서 싸울 수 있는 독보적인 체질은?",
+        options: ["혈귀를 먹어 일시적으로 혈귀화하는 특수 소화기관 체질", "통증을 느끼지 않는 무통 체질", "강철 같은 골격 체질", "체온이 50도까지 오르는 발열 체질"],
+        answerText: "혈귀를 먹어 일시적으로 혈귀화하는 특수 소화기관 체질",
+        exp: "겐야는 강한 소화기관을 지녀 혈귀의 신체 일부를 먹음으로써 일시적으로 혈귀의 괴력과 재생 능력을 얻습니다."
+      },
+      {
+        category: "귀살대 조직",
+        q: "귀살대의 최고 수장 우부야시키 카가야를 모든 주와 대원들이 존경을 담아 부르는 호칭은?",
+        options: ["어르신", "당주님", "대장님", "선생님"],
+        answerText: "어르신",
+        exp: "우부야시키 카가야는 대원들을 자신의 아이처럼 아끼며 대원들은 그를 '어르신'이라는 칭호로 부릅니다."
+      },
+      {
+        category: "인물과 오감",
+        q: "카마도 탄지로가 선천적으로 타고나 사람의 감정이나 혈귀의 기척, 빈틈의 실을 감지하는 감각은?",
+        options: ["후각", "청각", "촉각", "시각"],
+        answerText: "후각",
+        exp: "탄지로는 뛰어난 후각을 지녀 상대방의 감정뿐 아니라 칼을 찔러 넣을 수 있는 '틈새의 실' 냄새까지 맡을 수 있습니다."
+      },
+      {
+        category: "호흡과 무기",
+        q: "연주 칸로지 미츠리가 사용하는 채찍처럼 휘어지는 유연한 특수 일륜도와 고유 호흡은?",
+        options: ["사랑의 호흡", "꽃의 호흡", "달콤한 호흡", "무지개 호흡"],
+        answerText: "사랑의 호흡",
+        exp: "칸로지 미츠리는 보통 사람의 8배에 달하는 근밀도와 유연성을 살려 사랑의 호흡을 펼칩니다."
+      },
+      {
+        category: "귀살대 조직",
+        q: "나비저택에서 치료를 도우며, 주의 직속 후계자를 뜻하는 지칭은?",
+        options: ["츠구코", "수제자", "직전제자", "부관"],
+        answerText: "츠구코",
+        exp: "정발판 기준 주가 직접 자신의 기술과 자리를 계승하기 위해 훈련시키는 제자를 '츠구코'라고 부릅니다."
+      },
+      {
+        category: "혈귀와 혈귀술",
+        q: "상현 6 규타로와 다키 남매를 완벽하게 절명시키기 위한 조건은?",
+        options: ["두 사람의 목을 거의 동시에 베어야 한다", "규타로의 심장과 다키의 목을 파괴해야 한다", "다키를 먼저 소멸시킨 뒤 규타로를 베어야 한다", "독을 주입한 뒤 태양빛에 노출시켜야 한다"],
+        answerText: "두 사람의 목을 거의 동시에 베어야 한다",
+        exp: "다키와 규타로는 한 몸과 같아서 둘의 목을 동시에 베어야 완전히 소멸합니다."
+      },
+      {
+        category: "귀살대 계급",
+        q: "귀살대의 10단계 계급 체계에서 신입 대원이 최종선별을 통과했을 때 받는 가장 첫 계급은?",
+        options: ["계", "갑", "정", "신"],
+        answerText: "계",
+        exp: "귀살대 10단계 계급은 갑, 을, 병, 정, 무, 기, 경, 신, 임, 계 순이며, 가장 낮은 첫 단계는 '계'입니다."
+      },
+      {
+        category: "귀살대 지원",
+        q: "귀살대 본부와 대원들 사이에서 임무 지령을 말로 전달하는 조류의 명칭은?",
+        options: ["꺾쇠까마귀", "전령매", "흑철비둘기", "등꽃참새"],
+        answerText: "꺾쇠까마귀",
+        exp: "정발판 공식 명칭으로 대원 각자에게 배정되어 지령을 전달하는 까마귀를 '꺾쇠까마귀'라고 부릅니다."
+      },
+      {
+        category: "주와 무기",
+        q: "암주 히메지마 교메이가 강력한 괴력과 함께 휘두르는 일륜도의 형태는?",
+        options: ["사슬로 연결된 도끼와 철퇴", "거대한 대검", "양날의 거대 창", "강철 곤봉"],
+        answerText: "사슬로 연결된 도끼와 철퇴",
+        exp: "히메지마 교메이는 도끼와 쇠가시 철퇴가 튼튼한 사슬로 연결된 특수 일륜도를 사용합니다."
+      },
+      {
+        category: "혈귀와 혈귀술",
+        q: "도공 마을 편에서 상현 4 한텐구의 분신들이 하나로 합체하여 만들어진 증오의 분신 이름은?",
+        options: ["조하쿠텐", "세키도", "카라쿠", "우로기"],
+        answerText: "조하쿠텐",
+        exp: "한텐구의 희노애락 분신들이 합체하여 탄생한 증오의 화신은 조하쿠텐입니다."
+      },
+      {
+        category: "호흡의 역사",
+        q: "츠기쿠니 요리이치가 창시하였으며 모든 호흡의 모태가 되는 최초의 호흡은?",
+        options: ["해의 호흡", "태양의 호흡", "신성의 호흡", "원초의 호흡"],
+        answerText: "해의 호흡",
+        exp: "요리이치가 창시한 최초의 호흡은 '해의 호흡'이며 이후 물, 화염, 번개, 바람, 바위로 파생되었습니다."
+      },
+      {
+        category: "귀살대 인물",
+        q: "코쵸우 시노부의 언니이자 전 화주였으며 혈귀와의 화합을 꿈꿨던 인물은?",
+        options: ["코쵸우 카나에", "코쵸우 아오이", "츠유리 카나오", "우부야시키 아마네"],
+        answerText: "코쵸우 카나에",
+        exp: "상현 2 도우마에게 목숨을 잃기 전까지 혈귀와의 평화를 바랐던 전 화주는 코쵸우 카나에입니다."
+      },
+      {
+        category: "주와 동료",
+        q: "사주 이구로 오바나이의 목에 항상 감겨있으며 눈 역할을 해주는 영리한 흰 뱀의 이름은?",
+        options: ["카부라마루", "시로마루", "오로치", "헤비마루"],
+        answerText: "카부라마루",
+        exp: "이구로 오바나이의 소중한 벗이자 전황 파악을 돕는 흰 뱀은 카부라마루입니다."
+      },
+      {
+        category: "혈귀와 혈귀술",
+        q: "상현 2 도우마가 부채를 휘두르며 펼치는 혈귀술의 핵심 속성은?",
+        options: ["치명적인 냉기와 얼음 가루", "맹독의 안개", "피의 부식성 액체", "초고열의 불꽃"],
+        answerText: "치명적인 냉기와 얼음 가루",
+        exp: "도우마는 자신의 피를 얼려 미세한 얼음 가루를 날리고 이를 마신 상대의 폐를 얼려 괴사시키는 냉기 혈귀술을 사용합니다."
+      },
+      {
+        category: "가문의 전승",
+        q: "카마도 탄지로 가문에서 대대로 전승된 제사의 춤이자 검술 호흡은?",
+        options: ["히노카미 카구라", "불꽃의 춤", "태양신무", "가구토의 춤"],
+        answerText: "히노카미 카구라",
+        exp: "탄지로 가문이 불의 신에게 올리던 의식의 춤인 '히노카미 카구라'는 해의 호흡의 원형입니다."
+      },
+      {
+        category: "귀살대 승급 규정",
+        q: "귀살대 계급 체계에서 최상위 계급인 '주'가 되기 위한 공식 조건 중 하나는?",
+        options: ["십이귀월 1체를 쓰러뜨리거나 일반 혈귀 50체를 토벌한다", "최종선별에서 수석을 차지하고 1년을 버틴다", "기존 주와의 일대일 대결에서 승리한다", "당주에게 직접 일륜도를 새로 받는다"],
+        answerText: "십이귀월 1체를 쓰러뜨리거나 일반 혈귀 50체를 토벌한다",
+        exp: "귀살대 규정에 따르면 갑 계급의 대원이 십이귀월 1체를 격파하거나 일반 혈귀 50체를 토벌하면 주가 됩니다."
+      }
+    ];
+
+    /* =====================================================================
+       2. 비속어/성적 표현 검열 엔진
+       ===================================================================== */
+    const PROFANITY_PATTERNS = [
+      /시[발벌빨바]/i, /씨[발벌빨바]/i, /ㅅㅂ/i, /ㅂㅅ/i, /병[신신]/i,
+      /개[새끼소]/i, /존[나낟]/i, /좆/i, /ㅈㄹ/i, /지랄/i,
+      /섹[스쓰]/i, /야동/i, /자지/i, /보지/i, /보[빨빨]/i, /걸레/i,
+      /노무현/i, /운지/i, /일베/i, /메갈/i, /따먹/i, /성교/i, /창[녀놈]/i,
+      /애미/i, /애비/i, /니미/i, /느금/i, /fuck/i, /shit/i, /sex/i, /bitch/i
+    ];
+
+    function isProfane(text) {
+      if (!text) return false;
+      const clean = text.replace(/[\s\-_.,~!?@#$%^&*]/g, "");
+      return PROFANITY_PATTERNS.some(rx => rx.test(clean));
+    }
+
+    /* =====================================================================
+       3. Web Audio API 레트로 사운드
+       ===================================================================== */
+    class MobileAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume();
+        }
+      }
+      playCorrect() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.08);
+        osc.frequency.setValueAtTime(783.99, now + 0.16);
+        osc.frequency.setValueAtTime(1046.50, now + 0.24);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.42);
+      }
+      playWrong() {
+        if (this.muted) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.setValueAtTime(120, now + 0.12);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.32);
+      }
+      playFanfare() {
+        if (this.muted) return;
+        this.init();
+        [440, 554, 659, 880].forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const now = this.ctx.currentTime + (idx * 0.09);
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.28);
+        });
+      }
+    }
+    const audio = new MobileAudioEngine();
+
+    /* =====================================================================
+       4. 게임 루프 & 실시간 데이터베이스 연동
+       ===================================================================== */
+    let currentQuizList = [];
+    let currentIndex = 0;
+    let score = 0;
+    let combo = 0;
+    let maxCombo = 0;
+    let timerInterval = null;
+    let timeLeft = 15;
+    const QUESTION_TIME = 15;
+    let targetQuestionCount = 10;
+    let newlySubmittedKey = null;
+
+    const screenStart = document.getElementById("screenStart");
+    const screenQuiz = document.getElementById("screenQuiz");
+    const screenResult = document.getElementById("screenResult");
+
+    const hudProgress = document.getElementById("hudProgress");
+    const hudScore = document.getElementById("hudScore");
+    const hudCombo = document.getElementById("hudCombo");
+    const timerBar = document.getElementById("timerBar");
+    const questionCategory = document.getElementById("questionCategory");
+    const questionText = document.getElementById("questionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const feedbackBox = document.getElementById("feedbackBox");
+    const feedbackTitle = document.getElementById("feedbackTitle");
+    const feedbackDesc = document.getElementById("feedbackDesc");
+    const btnNext = document.getElementById("btnNext");
+
+    const resultGradeBadge = document.getElementById("resultGradeBadge");
+    const resultFinalScore = document.getElementById("resultFinalScore");
+    const resultCorrectCount = document.getElementById("resultCorrectCount");
+    const resultAccuracy = document.getElementById("resultAccuracy");
+    const resultMaxCombo = document.getElementById("resultMaxCombo");
+    const playerNameInput = document.getElementById("playerNameInput");
+    const btnSubmitRank = document.getElementById("btnSubmitRank");
+    const filterWarningMsg = document.getElementById("filterWarningMsg");
+    const leaderboardBody = document.getElementById("leaderboardBody");
+    const arcadeEntryArea = document.getElementById("arcadeEntryArea");
+    const toastMsg = document.getElementById("toastMsg");
+
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      toastMsg.classList.add("show");
+      setTimeout(() => toastMsg.classList.remove("show"), 2200);
+    }
+
+    // 모드 선택
+    document.querySelectorAll(".mode-item").forEach(item => {
+      item.addEventListener("click", () => {
+        document.querySelectorAll(".mode-item").forEach(m => m.classList.remove("selected"));
+        item.classList.add("selected");
+        targetQuestionCount = parseInt(item.getAttribute("data-count"), 10);
+      });
+    });
+
+    // 피셔-예이츠 셔플 알고리즘
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    // 퀴즈 시작 (보기 순서 무작위 셔플)
+    document.getElementById("btnStartQuiz").addEventListener("click", () => {
+      audio.init();
+
+      const selectedQuestions = shuffleArray(QUIZ_DATABASE).slice(0, targetQuestionCount);
+      currentQuizList = selectedQuestions.map(item => {
+        const shuffledOpts = shuffleArray(item.options);
+        return {
+          category: item.category,
+          q: item.q,
+          options: shuffledOpts,
+          answer: shuffledOpts.indexOf(item.answerText),
+          exp: item.exp
+        };
+      });
+
+      currentIndex = 0;
+      score = 0;
+      combo = 0;
+      maxCombo = 0;
+      newlySubmittedKey = null;
+
+      screenStart.classList.remove("active");
+      screenResult.classList.remove("active");
+      screenQuiz.classList.add("active");
+
+      loadQuestion();
+    });
+
+    function loadQuestion() {
+      clearInterval(timerInterval);
+      btnNext.style.display = "none";
+      feedbackBox.style.display = "none";
+
+      const current = currentQuizList[currentIndex];
+      hudProgress.textContent = `${currentIndex + 1} / ${currentQuizList.length}`;
+      hudScore.textContent = score.toLocaleString();
+      hudCombo.textContent = `${combo}연속`;
+      questionCategory.textContent = current.category;
+      questionText.textContent = current.q;
+
+      optionsContainer.innerHTML = "";
+      current.options.forEach((optText, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option-button";
+        btn.innerHTML = `<span class="option-index">${idx + 1}</span><span>${optText}</span>`;
+        btn.addEventListener("click", () => selectOption(idx));
+        optionsContainer.appendChild(btn);
+      });
+
+      timeLeft = QUESTION_TIME;
+      timerBar.style.width = "100%";
+      const step = 100;
+      timerInterval = setInterval(() => {
+        timeLeft -= step / 1000;
+        const pct = Math.max(0, (timeLeft / QUESTION_TIME) * 100);
+        timerBar.style.width = `${pct}%`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          handleTimeout();
+        }
+      }, step);
+    }
+
+    function selectOption(selectedIdx) {
+      clearInterval(timerInterval);
+      const current = currentQuizList[currentIndex];
+      const buttons = optionsContainer.querySelectorAll(".option-button");
+      buttons.forEach(b => b.disabled = true);
+
+      if (selectedIdx === current.answer) {
+        buttons[selectedIdx].classList.add("correct");
+        combo++;
+        if (combo > maxCombo) maxCombo = combo;
+        const timeBonus = Math.round(timeLeft * 15);
+        const comboBonus = (combo - 1) * 35;
+        const gain = 300 + timeBonus + comboBonus;
+        score += gain;
+        audio.playCorrect();
+
+        feedbackTitle.textContent = `정답입니다! (+${gain}점)`;
+        feedbackTitle.style.color = "var(--accent-green)";
+        feedbackDesc.textContent = current.exp;
+      } else {
+        buttons[selectedIdx].classList.add("wrong");
+        buttons[current.answer].classList.add("correct");
+        combo = 0;
+        audio.playWrong();
+
+        feedbackTitle.textContent = "오답입니다!";
+        feedbackTitle.style.color = "var(--accent-crimson)";
+        feedbackDesc.textContent = current.exp;
+      }
+
+      hudScore.textContent = score.toLocaleString();
+      hudCombo.textContent = `${combo}연속`;
+      feedbackBox.style.display = "block";
+
+      btnNext.textContent = (currentIndex + 1 < currentQuizList.length) ? "다음 문제로 이동" : "선별 결과 확인하기";
+      btnNext.style.display = "flex";
+    }
+
+    function handleTimeout() {
+      const current = currentQuizList[currentIndex];
+      const buttons = optionsContainer.querySelectorAll(".option-button");
+      buttons.forEach(b => b.disabled = true);
+      buttons[current.answer].classList.add("correct");
+      combo = 0;
+      audio.playWrong();
+
+      feedbackTitle.textContent = "시간 초과!";
+      feedbackTitle.style.color = "var(--accent-crimson)";
+      feedbackDesc.textContent = "제한 시간 15초가 경과했습니다. " + current.exp;
+      hudCombo.textContent = `${combo}연속`;
+      feedbackBox.style.display = "block";
+
+      btnNext.textContent = (currentIndex + 1 < currentQuizList.length) ? "다음 문제로 이동" : "선별 결과 확인하기";
+      btnNext.style.display = "flex";
+    }
+
+    btnNext.addEventListener("click", () => {
+      if (currentIndex + 1 < currentQuizList.length) {
+        currentIndex++;
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    });
+
+    function calculateGrade(rate) {
+      if (rate >= 90) return "주";
+      if (rate >= 80) return "갑";
+      if (rate >= 70) return "을";
+      if (rate >= 60) return "병";
+      if (rate >= 50) return "정";
+      if (rate >= 40) return "무";
+      if (rate >= 30) return "기";
+      if (rate >= 20) return "경";
+      if (rate >= 10) return "신";
+      return "계";
+    }
+
+    function finishQuiz() {
+      screenQuiz.classList.remove("active");
+      screenResult.classList.add("active");
+      audio.playFanfare();
+
+      const calculatedRate = Math.min(100, Math.max(10, Math.round((score / (currentQuizList.length * 400)) * 100)));
+      const grade = calculateGrade(calculatedRate);
+
+      resultGradeBadge.textContent = "귀살대 부여 계급: " + grade;
+      resultFinalScore.textContent = score.toLocaleString();
+      resultAccuracy.textContent = `${calculatedRate}%`;
+      resultMaxCombo.textContent = `${maxCombo}회`;
+      resultCorrectCount.textContent = `${Math.round(calculatedRate * currentQuizList.length / 100)} / ${currentQuizList.length}`;
+
+      arcadeEntryArea.style.display = "block";
+      playerNameInput.value = "";
+      filterWarningMsg.style.display = "none";
+
+      listenRealtimeLeaderboard();
+    }
+
+    // 파이어베이스 실시간 상위 20인 리스너
+    function listenRealtimeLeaderboard() {
+      if (!isFirebaseReady || !db) {
+        renderLeaderboard([]);
+        return;
+      }
+
+      // 점수순으로 정렬하여 상위 20건 실시간 수신
+      db.ref("leaderboard")
+        .orderByChild("score")
+        .limitToLast(20)
+        .on("value", snapshot => {
+          const list = [];
+          snapshot.forEach(child => {
+            list.push({ key: child.key, ...child.val() });
+          });
+          // 내림차순(높은 점수 먼저) 정렬
+          list.sort((a, b) => b.score - a.score);
+          renderLeaderboard(list);
+        });
+    }
+
+    function renderLeaderboard(top20) {
+      leaderboardBody.innerHTML = "";
+
+      if (!isFirebaseReady) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td colspan="4" style="text-align: center; color: var(--accent-gold); padding: 22px 10px; font-size: 0.8rem; line-height: 1.5;">
+            파이어베이스 설정 전입니다.<br>코드 상단의 firebaseConfig를 입력해 주세요.
+          </td>
+        `;
+        leaderboardBody.appendChild(row);
+        return;
+      }
+
+      if (top20.length === 0) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td colspan="4" style="text-align: center; color: var(--text-sub); padding: 22px 10px; font-size: 0.82rem; line-height: 1.5;">
+            아직 등록된 기록이 없습니다.<br>첫 번째로 이름을 새겨보세요!
+          </td>
+        `;
+        leaderboardBody.appendChild(row);
+        return;
+      }
+
+      top20.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        if (item.key === newlySubmittedKey) tr.classList.add("highlight");
+
+        let posClass = "rank-pos";
+        if (index === 0) posClass += " gold";
+        else if (index === 1) posClass += " silver";
+        else if (index === 2) posClass += " bronze";
+
+        tr.innerHTML = `
+          <td class="${posClass}">${index + 1}</td>
+          <td>${escapeHtml(item.name)}</td>
+          <td><span class="rank-grade-pill">${escapeHtml(item.grade)}</span></td>
+          <td style="text-align: right; font-weight: 800;">${item.score.toLocaleString()}</td>
+        `;
+        leaderboardBody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    // 온라인 명예의 전당 등록
+    btnSubmitRank.addEventListener("click", () => {
+      const name = playerNameInput.value.trim();
+      if (!name) {
+        showToast("이름을 입력해 주십시오.");
+        return;
+      }
+
+      if (isProfane(name)) {
+        filterWarningMsg.style.display = "block";
+        showToast("부적절한 이름은 등록할 수 없습니다.");
+        return;
+      }
+
+      if (!isFirebaseReady || !db) {
+        showToast("파이어베이스 연결 정보를 먼저 입력해 주세요.");
+        return;
+      }
+
+      filterWarningMsg.style.display = "none";
+      const calculatedRate = Math.min(100, Math.max(10, Math.round((score / (currentQuizList.length * 400)) * 100)));
+      const grade = calculateGrade(calculatedRate);
+
+      btnSubmitRank.disabled = true;
+      btnSubmitRank.textContent = "저장중";
+
+      // 파이어베이스 DB에 새 기록 밀어넣기 (Push)
+      const newRef = db.ref("leaderboard").push();
+      newRef.set({
+        name: name,
+        grade: grade,
+        score: score,
+        createdAt: Date.now()
+      }).then(() => {
+        newlySubmittedKey = newRef.key;
+        arcadeEntryArea.style.display = "none";
+        btnSubmitRank.disabled = false;
+        btnSubmitRank.textContent = "기록";
+        showToast("실시간 랭킹판에 등록되었습니다!");
+      }).catch(err => {
+        console.error(err);
+        btnSubmitRank.disabled = false;
+        btnSubmitRank.textContent = "기록";
+        showToast("등록 실패. 인터넷 또는 규칙을 확인하세요.");
+      });
+    });
+
+    document.getElementById("btnRestart").addEventListener("click", () => {
+      screenResult.classList.remove("active");
+      screenStart.classList.add("active");
+    });
+
+    // 소리 토글
+    const btnSound = document.getElementById("btnSound");
+    btnSound.addEventListener("click", () => {
+      audio.muted = !audio.muted;
+      btnSound.textContent = audio.muted ? "소리 끔" : "소리 켬";
+      showToast(audio.muted ? "음소거되었습니다." : "효과음이 켜졌습니다.");
+    });
+  </script>
+</body>
+</html>
