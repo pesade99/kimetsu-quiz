@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>귀멸의 칼날 귀살대 선별 퀴즈</title>
   
-  <!-- Firebase SDK (실시간 데이터 동기화) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -64,7 +64,6 @@
       padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* 상단 헤더 */
     .app-header {
       position: sticky;
       top: 0;
@@ -97,11 +96,6 @@
       font-weight: 700;
     }
 
-    .header-tools {
-      display: flex;
-      gap: 6px;
-    }
-
     .btn-header {
       background: #1f2738;
       border: 1px solid var(--border-color);
@@ -111,9 +105,6 @@
       font-size: 0.76rem;
       font-weight: 700;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      transition: background 0.15s ease;
     }
 
     .btn-header:active {
@@ -121,7 +112,6 @@
       transform: scale(0.96);
     }
 
-    /* 제작자 및 유튜브 배너 */
     .creator-banner {
       background: linear-gradient(135deg, rgba(211, 47, 47, 0.25), rgba(255, 179, 0, 0.15));
       border-bottom: 1px solid rgba(255, 179, 0, 0.35);
@@ -145,13 +135,8 @@
       font-weight: 700;
       color: #ff5252;
       margin-top: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
     }
 
-    /* 메인 콘텐츠 */
     .content-area {
       flex: 1;
       padding: 16px 16px 24px 16px;
@@ -179,11 +164,11 @@
     /* 시작 화면 */
     .intro-banner {
       text-align: center;
-      padding: 12px 0 18px 0;
+      padding: 10px 0 16px 0;
     }
 
     .intro-banner h1 {
-      font-size: 1.65rem;
+      font-size: 1.6rem;
       font-weight: 900;
       color: #fff;
       letter-spacing: -0.5px;
@@ -192,9 +177,9 @@
     }
 
     .intro-banner p {
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       color: var(--text-sub);
-      line-height: 1.45;
+      line-height: 1.4;
       word-break: keep-all;
     }
 
@@ -202,7 +187,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin: 14px 0 22px 0;
+      margin: 12px 0 20px 0;
     }
 
     .mode-item {
@@ -215,9 +200,10 @@
       justify-content: space-between;
       align-items: center;
       transition: all 0.15s ease;
+      position: relative;
     }
 
-    .mode-item:active {
+    .mode-item:active:not(.locked) {
       transform: scale(0.98);
     }
 
@@ -227,26 +213,44 @@
       box-shadow: 0 0 12px rgba(255, 51, 75, 0.25);
     }
 
+    .mode-item.locked {
+      opacity: 0.55;
+      background: #121620;
+      border-color: #1e2433;
+      cursor: not-allowed;
+    }
+
     .mode-item h3 {
       font-size: 0.95rem;
       font-weight: 850;
       color: #fff;
       margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .mode-item p {
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       color: var(--text-sub);
     }
 
     .mode-pill {
-      background: rgba(255, 179, 0, 0.15);
-      color: var(--accent-gold);
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       font-weight: 800;
-      padding: 5px 9px;
-      border-radius: 8px;
+      padding: 4px 8px;
+      border-radius: 6px;
       white-space: nowrap;
+    }
+
+    .mode-pill.open {
+      background: rgba(0, 230, 118, 0.15);
+      color: var(--accent-green);
+    }
+
+    .mode-pill.lock-badge {
+      background: rgba(255, 51, 75, 0.15);
+      color: var(--accent-crimson);
     }
 
     .btn-action {
@@ -269,7 +273,6 @@
 
     .btn-action:active {
       transform: scale(0.98);
-      filter: brightness(0.9);
     }
 
     /* 퀴즈 화면 */
@@ -431,12 +434,25 @@
       word-break: keep-all;
     }
 
-    /* 결과 및 명예의 전당 */
+    /* 결과 화면 */
     .result-header-box {
       text-align: center;
       padding: 10px 0 14px 0;
       border-bottom: 1px solid var(--border-color);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
+    }
+
+    .stage-notice-banner {
+      background: rgba(255, 179, 0, 0.12);
+      border: 1px solid var(--accent-gold);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 14px;
+      text-align: center;
+      word-break: keep-all;
     }
 
     .grade-chip {
@@ -515,10 +531,6 @@
       outline: none;
     }
 
-    .input-name:focus {
-      border-color: var(--accent-gold);
-    }
-
     .btn-submit-name {
       height: 44px;
       background: var(--accent-gold);
@@ -573,7 +585,7 @@
       border: 1px solid var(--border-color);
       border-radius: 10px;
       overflow: hidden;
-      max-height: 270px;
+      max-height: 250px;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
@@ -600,10 +612,6 @@
       padding: 9px 10px;
       border-bottom: 1px solid #1a2130;
       color: #fff;
-    }
-
-    .rank-table tr:last-child td {
-      border-bottom: none;
     }
 
     .rank-table tr.highlight {
@@ -657,54 +665,51 @@
 <body>
 
   <div class="mobile-frame">
-    <!-- 앱 헤더 -->
     <header class="app-header">
       <div class="header-logo">
         <span>귀살대 선별시험</span>
         <span class="header-badge">정발판</span>
       </div>
-      <div class="header-tools">
-        <button class="btn-header" id="btnSound">소리 켬</button>
-      </div>
+      <button class="btn-header" id="btnSound">소리 켬</button>
     </header>
 
-    <!-- 제작자 및 유튜브 배너 -->
     <div class="creator-banner">
       <div class="creator-author">만든사람 : <span>망칠이_뭉칠이</span></div>
       <div class="creator-sub">유튜브 구독 좋아요 부탁해</div>
     </div>
 
-    <!-- 메인 콘텐츠 영역 -->
     <main class="content-area">
       
       <!-- 1. 시작 화면 -->
       <section id="screenStart" class="screen active">
         <div class="intro-banner">
           <h1>귀살대 선별 퀴즈</h1>
-          <p>한국 정발 단행본 공식 설정 완벽 고증<br>문제를 풀고 전 세계 실시간 상위 20인에 이름을 새기십시오!</p>
+          <p>만점 달성 시 상위 단계 해금!<br>빠르게 맞출수록 스피드 보너스 점수가 부여됩니다.</p>
         </div>
 
         <div class="mode-list">
-          <div class="mode-item selected" data-count="10">
+          <div class="mode-item selected" id="cardStage1" data-stage="1" data-count="10">
             <div>
-              <h3>일반 임무 (10문항)</h3>
-              <p>핵심 설정 위주의 신속 선별 코스</p>
+              <h3>1단계: 일반 임무 (10문항)</h3>
+              <p>만점 통과 시 2단계 해금</p>
             </div>
-            <div class="mode-pill">10문제</div>
+            <div class="mode-pill open" id="badgeStage1">도전 가능</div>
           </div>
-          <div class="mode-item" data-count="20">
+
+          <div class="mode-item locked" id="cardStage2" data-stage="2" data-count="20">
             <div>
-              <h3>최종선별 (20문항)</h3>
-              <p>호흡과 혈귀술을 종합 검증하는 정규 코스</p>
+              <h3>2단계: 최종선별 (20문항)</h3>
+              <p>1단계 만점자만 입장 가능</p>
             </div>
-            <div class="mode-pill">20문제</div>
+            <div class="mode-pill lock-badge" id="badgeStage2">잠김 (만점 필요)</div>
           </div>
-          <div class="mode-item" data-count="30">
+
+          <div class="mode-item locked" id="cardStage3" data-stage="3" data-count="30">
             <div>
-              <h3>주의 시련 (30문항 전체)</h3>
-              <p>공식 설정집의 모든 지식을 다루는 최고 난도</p>
+              <h3>3단계: 주의 시련 (30문항)</h3>
+              <p>2단계 만점자만 입장 가능</p>
             </div>
-            <div class="mode-pill">30문제</div>
+            <div class="mode-pill lock-badge" id="badgeStage3">잠김 (만점 필요)</div>
           </div>
         </div>
 
@@ -759,9 +764,13 @@
           </div>
         </div>
 
+        <!-- 단계 통과 여부 알림 배너 -->
+        <div class="stage-notice-banner" id="stageNoticeBanner">결과 판정</div>
+
+        <!-- 온라인 명예의 전당 등록 -->
         <div class="entry-card" id="arcadeEntryArea">
           <h4>오락실 명예의 전당 등록</h4>
-          <p>모든 참가자가 함께 보는 실시간 랭킹판에 기록됩니다.</p>
+          <p>모든 참가자가 함께 보는 실시간 순위판에 기록됩니다.</p>
           <div class="input-row">
             <input type="text" id="playerNameInput" class="input-name" maxlength="8" placeholder="이름 (최대 8자)" autocomplete="off">
             <button class="btn-submit-name" id="btnSubmitRank">기록</button>
@@ -799,8 +808,8 @@
 
   <script>
     /* =====================================================================
-       ★ [중요] 파이어베이스(Firebase) 설정값 입력란
-       콘솔에서 발급받은 본인의 설정을 여기에 붙여넣으세요.
+       ★ [파이어베이스 설정 입력란]
+       기존에 사용하시던 본인의 Firebase 설정을 여기에 그대로 유지하시면 됩니다.
        ===================================================================== */
 const firebaseConfig = {
   apiKey: "AIzaSyAuEmsUmOv5cjXnSW9sj3aS4t5nar7fMDo",
@@ -815,7 +824,6 @@ const firebaseConfig = {
     let db = null;
     let isFirebaseReady = false;
 
-    // 파이어베이스 초기화
     try {
       if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
         firebase.initializeApp(firebaseConfig);
@@ -823,227 +831,333 @@ const firebaseConfig = {
         isFirebaseReady = true;
       }
     } catch (e) {
-      console.warn("Firebase 연결 실패:", e);
+      console.warn("Firebase 초기화 에러:", e);
     }
 
     /* =====================================================================
-       1. 정발판 공식 고증 30문항 원본 데이터
+       1. 정발판 공식 고증 퀴즈 풀 (45문항 대폭 확장 & 다채로운 변형 문항)
        ===================================================================== */
     const QUIZ_DATABASE = [
       {
         category: "인물과 스승",
-        q: "카마도 탄지로가 토미오카 기유의 편지를 받고 찾아간 첫 번째 스승이자 전직 수주는 누구인가?",
+        q: "카마도 탄지로가 토미오카 기유의 서신을 받고 찾아간 첫 스승이자 전직 수주는 누구인가?",
         options: ["우로코다키 사콘지", "쿠와지마 지고로", "렌고쿠 신쥬로", "테치카와하라"],
         answerText: "우로코다키 사콘지",
-        exp: "탄지로는 전직 수주인 우로코다키 사콘지 밑에서 사기리 산의 혹독한 수련을 거쳐 물의 호흡을 터득했습니다."
+        exp: "탄지로는 전직 수주인 우로코다키 사콘지에게 사기리 산에서 물의 호흡을 배웠습니다."
       },
       {
         category: "귀살대 장비",
-        q: "혈귀를 베어 없앨 수 있는 일륜도의 원료가 되는 두 가지 광물은?",
+        q: "혈귀를 절명시킬 수 있는 일륜도의 원료가 되는 두 가지 태양빛 광물은?",
         options: ["성철원석과 성진사", "비취강과 흑연사", "진홍철과 백은석", "유성철과 벽옥사"],
         answerText: "성철원석과 성진사",
-        exp: "정발 단행본 기준, 일륜도는 태양빛을 듬뿍 흡수한 성철원석과 성진사를 재료로 만들어집니다."
+        exp: "정발판 기준 일륜도는 태양빛을 머금은 성철원석과 성진사로 제작됩니다."
       },
       {
         category: "최종선별",
-        q: "귀살대 입단 시험인 최종선별이 열리며, 혈귀가 싫어하는 등꽃이 일 년 내내 피어있는 산은?",
+        q: "귀살대 최종선별 시험이 치러지며 일 년 내내 등꽃이 만발해 있는 산의 명칭은?",
         options: ["후지카사네 산", "사기리 산", "나타구모 산", "요시와라 산"],
         answerText: "후지카사네 산",
-        exp: "최종선별은 등꽃이 1년 내내 만발하여 혈귀가 도망치지 못하는 후지카사네 산에서 7일간 생존하는 시험입니다."
+        exp: "혈귀가 기피하는 등꽃이 사계절 내내 피어있는 후지카사네 산에서 7일간 생존해야 합니다."
       },
       {
         category: "호흡과 검술",
-        q: "토미오카 기유가 기존 물의 호흡 열 가지 형에 만족하지 않고 독자적으로 창안한 제11형은?",
+        q: "수주 토미오카 기유가 기존 물의 호흡 열 가지 형 외에 독자적으로 창안한 제11형은?",
         options: ["잔잔한 물결", "유유무늬", "비틀린 소용돌이", "가뭄의 단비"],
         answerText: "잔잔한 물결",
-        exp: "토미오카 기유는 자신의 간합 안에 들어오는 혈귀의 공격을 전부 무효화하는 물의 호흡 제11형 잔잔한 물결을 창안했습니다."
+        exp: "자신의 간합 안으로 들어오는 혈귀의 공격을 전부 무효화하는 기유의 고유 기술입니다."
       },
       {
         category: "호흡과 검술",
         q: "무한열차에서 염주 렌고쿠 쿄쥬로가 상현 3 아카자를 상대로 펼친 화염의 호흡 궁극오의는?",
         options: ["제9형 연옥", "제5형 염호", "제1형 시화운화", "제4형 성염의 파도"],
         answerText: "제9형 연옥",
-        exp: "렌고쿠 쿄쥬로가 자신의 모든 투기를 쏟아부어 돌진한 화염의 호흡 궁극오의는 제9형 연옥입니다."
+        exp: "온몸의 투기를 불태워 돌진하는 화염의 호흡 최강의 오의는 제9형 연옥입니다."
       },
       {
         category: "혈귀와 시조",
-        q: "혈귀의 시조 키부츠지 무잔이 완전무결한 불사의 몸이 되어 태양을 극복하기 위해 천 년 동안 찾아 헤맨 것은?",
+        q: "혈귀의 시조 키부츠지 무잔이 태양을 극복하기 위해 천 년 동안 필사적으로 찾아 헤맨 것은?",
         options: ["푸른 피안화", "붉은 영지초", "백색 등꽃", "황금 연꽃"],
         answerText: "푸른 피안화",
-        exp: "키부츠지 무잔은 자신을 혈귀로 만든 의사의 약재 중 하나인 푸른 피안화를 찾기 위해 끝없이 혈귀를 양산했습니다."
+        exp: "무잔은 자신을 혈귀로 만들었던 약재 중 하나인 푸른 피안화를 집요하게 추적했습니다."
       },
       {
         category: "호흡과 검술",
-        q: "아가츠마 젠이츠가 극한의 공포 속에서 기절했을 때 완벽하게 구사하는 번개의 호흡 기술은?",
+        q: "아가츠마 젠이츠가 극도의 공포로 기절했을 때 신속의 경지로 구사하는 번개의 호흡 기술은?",
         options: ["제1형 벽력일섬", "제2형 도혼", "제3형 취문성뢰", "제4형 원뢰"],
         answerText: "제1형 벽력일섬",
-        exp: "젠이츠는 다른 형은 쓰지 못하지만 오직 번개의 호흡 제1형 벽력일섬만을 극한으로 연마하여 신속의 경지에 올랐습니다."
+        exp: "젠이츠는 오직 번개의 호흡 제1형 벽력일섬만을 극한으로 단련했습니다."
       },
       {
         category: "귀살대 신체능력",
-        q: "귀살대 대원들이 하루 24시간 내내 호흡을 유지하여 기초 체력과 전투력을 비약적으로 끌어올리는 특수 호흡법은?",
+        q: "잠자는 시간까지 포함하여 하루 24시간 내내 전집중 호흡 상태를 유지하는 수련법은?",
         options: ["전집중 상중", "전집중 극의", "항상호흡", "심폐극대화"],
         answerText: "전집중 상중",
-        exp: "정발판 기준, 잠자는 동안에도 지속적으로 전집중 호흡 상태를 유지하는 것을 전집중 상중이라고 부릅니다."
+        exp: "기초 체력과 전투력을 비약적으로 끌어올리는 기술은 전집중 상중입니다."
       },
       {
         category: "주와 전투방식",
-        q: "충주 코쵸우 시노부가 혈귀의 목을 벨 완력이 부족함에도 주가 될 수 있었던 독창적인 공격 수단은?",
+        q: "충주 코쵸우 시노부가 혈귀의 목을 벨 완력이 부족함에도 주가 될 수 있었던 전투법은?",
         options: ["등꽃 독을 이용한 연속 찌르기", "화염 폭약 투척술", "수면 침술 제압", "초고주파 음파 충격"],
         answerText: "등꽃 독을 이용한 연속 찌르기",
-        exp: "코쵸우 시노부는 칼끝으로 혈귀의 체내에 치명적인 등꽃 독을 직접 주입하여 절명시키는 독자적인 검술을 창안했습니다."
+        exp: "시노부는 칼끝으로 혈귀에게 치명적인 등꽃 독을 직접 주입하여 절명시킵니다."
       },
       {
         category: "호흡과 검술",
-        q: "하주 토키토 무이치로가 상현 5 굣코를 쓰러뜨릴 때 선보인 안개의 호흡 고유 창안 기술은?",
+        q: "하주 토키토 무이치로가 상현 5 굣코를 쓰러뜨릴 때 펼친 안개의 호흡 고유 창안 기술은?",
         options: ["제7형 몽롱", "제4형 이류베기", "제5형 안개구름 바다", "제6형 달의 안개 소멸"],
         answerText: "제7형 몽롱",
-        exp: "토키토 무이치로가 스스로 만들어낸 안개의 호흡 제7형 몽롱은 극단적인 완급조절로 적을 농락하는 기술입니다."
+        exp: "속도의 완급 조절로 자신의 모습을 안개처럼 감추는 안개의 호흡 제7형 몽롱입니다."
       },
       {
         category: "호흡과 감각",
-        q: "하시비라 이노스케가 사용하는 짐승의 호흡 중, 피부의 초감각으로 원거리 적의 기운을 읽어내는 기술은?",
+        q: "하시비라 이노스케가 피부의 초감각으로 원거리 적의 기운과 위치를 포착하는 기술은?",
         options: ["제7형 공간식각", "제5형 미친 듯이 찢기", "제9형 연장 관통", "제3형 뜯어 찢기"],
         answerText: "제7형 공간식각",
-        exp: "이노스케는 온몸의 촉각을 곤두세워 공기의 미세한 흔들림을 포착하는 짐승의 호흡 제7형 공간식각을 사용합니다."
+        exp: "공기의 미세한 흐름을 읽어 광범위하게 적을 탐색하는 짐승의 호흡 제7형 공간식각입니다."
       },
       {
         category: "혈귀와 혈귀술",
-        q: "십이귀월 중 상현 3 아카자가 체술과 나침반 형상의 술식을 발동할 때 외치는 고유 혈귀술 명칭은?",
+        q: "십이귀월 상현 3 아카자가 체술과 나침반 형상의 술식을 발동할 때 쓰는 고유 혈귀술은?",
         options: ["파괴살", "나침투권", "귀살쇄", "무한격파"],
         answerText: "파괴살",
-        exp: "아카자는 투기를 감지하는 나침을 전개하고 정밀한 타격을 가하는 파괴살 혈귀술을 사용합니다."
+        exp: "적의 투기를 감지하여 정밀 타격을 가하는 아카자의 혈귀술은 파괴살입니다."
       },
       {
         category: "호흡의 기원",
-        q: "상현 1 코쿠시보가 귀살대 검사 시절부터 갈고닦아 혈귀가 된 후에도 사용하는 고유 호흡은?",
+        q: "상현 1 코쿠시보가 귀살대 시절부터 갈고닦아 혈귀가 된 후에도 구사하는 고유 호흡은?",
         options: ["달의 호흡", "어둠의 호흡", "밤의 호흡", "성좌의 호흡"],
         answerText: "달의 호흡",
-        exp: "코쿠시보는 해의 호흡의 파생이자 변형인 달의 호흡을 사용하며 무수한 초승달 칼날을 방출합니다."
+        exp: "해의 호흡에서 파생된 변형 호흡으로 무수한 초승달 칼날을 방출하는 달의 호흡입니다."
       },
       {
         category: "귀살대 조직",
-        q: "귀살대에서 당주 바로 아래 위치하며 부대를 통솔하는 최고위 정예 검사 9명을 통칭하는 명칭은?",
+        q: "귀살대에서 당주 바로 아래에 위치하며 부대를 통솔하는 최고위 정예 검사 9인을 뜻하는 명칭은?",
         options: ["주", "기둥", "십이검객", "사령관"],
         answerText: "주",
-        exp: "한국 정발 단행본 공식 명칭 기준 최상위 정예 무사는 '주'로 통칭됩니다."
+        exp: "한국 정발 단행본 공식 명칭 기준 최상위 정예 무사는 '주'로 표기됩니다."
       },
       {
         category: "특수 체질",
         q: "시나즈가와 겐야가 호흡을 쓰지 못함에도 불구하고 전선에서 싸울 수 있는 독보적인 체질은?",
-        options: ["혈귀를 먹어 일시적으로 혈귀화하는 특수 소화기관 체질", "통증을 느끼지 않는 무통 체질", "강철 같은 골격 체질", "체온이 50도까지 오르는 발열 체질"],
+        options: ["혈귀를 먹어 일시적으로 혈귀화하는 특수 소화기관 체질", "통증을 느끼지 않는 무통 체질", "강철 골격 체질", "체온 50도 발열 체질"],
         answerText: "혈귀를 먹어 일시적으로 혈귀화하는 특수 소화기관 체질",
-        exp: "겐야는 강한 소화기관을 지녀 혈귀의 신체 일부를 먹음으로써 일시적으로 혈귀의 괴력과 재생 능력을 얻습니다."
+        exp: "혈귀의 신체 일부를 먹어 일시적으로 괴력과 재생력을 얻는 특수 소화기관을 지녔습니다."
       },
       {
         category: "귀살대 조직",
-        q: "귀살대의 최고 수장 우부야시키 카가야를 모든 주와 대원들이 존경을 담아 부르는 호칭은?",
+        q: "우부야시키 카가야 당주를 모든 주와 귀살대원들이 존경을 담아 부르는 호칭은?",
         options: ["어르신", "당주님", "대장님", "선생님"],
         answerText: "어르신",
-        exp: "우부야시키 카가야는 대원들을 자신의 아이처럼 아끼며 대원들은 그를 '어르신'이라는 칭호로 부릅니다."
+        exp: "대원들은 깊은 경애의 마음을 담아 우부야시키 카가야를 '어르신'이라 부릅니다."
       },
       {
         category: "인물과 오감",
-        q: "카마도 탄지로가 선천적으로 타고나 사람의 감정이나 혈귀의 기척, 빈틈의 실을 감지하는 감각은?",
+        q: "탄지로가 상대방의 감정 상태나 혈귀의 기척, 빈틈의 실을 포착할 때 사용하는 뛰어난 오감은?",
         options: ["후각", "청각", "촉각", "시각"],
         answerText: "후각",
-        exp: "탄지로는 뛰어난 후각을 지녀 상대방의 감정뿐 아니라 칼을 찔러 넣을 수 있는 '틈새의 실' 냄새까지 맡을 수 있습니다."
+        exp: "탄지로는 냄새로 감정과 칼을 찔러 넣을 수 있는 '틈새의 실'까지 분별합니다."
       },
       {
         category: "호흡과 무기",
-        q: "연주 칸로지 미츠리가 사용하는 채찍처럼 휘어지는 유연한 특수 일륜도와 고유 호흡은?",
+        q: "연주 칸로지 미츠리가 사용하는 유연한 특수 일륜도와 고유 호흡은?",
         options: ["사랑의 호흡", "꽃의 호흡", "달콤한 호흡", "무지개 호흡"],
         answerText: "사랑의 호흡",
-        exp: "칸로지 미츠리는 보통 사람의 8배에 달하는 근밀도와 유연성을 살려 사랑의 호흡을 펼칩니다."
+        exp: "상인의 8배에 달하는 근밀도와 유연성을 살려 펼치는 사랑의 호흡입니다."
       },
       {
         category: "귀살대 조직",
-        q: "나비저택에서 치료를 도우며, 주의 직속 후계자를 뜻하는 지칭은?",
+        q: "주가 직접 자신의 기술과 자리를 계승하기 위해 훈련시키는 직속 후계자를 뜻하는 말은?",
         options: ["츠구코", "수제자", "직전제자", "부관"],
         answerText: "츠구코",
-        exp: "정발판 기준 주가 직접 자신의 기술과 자리를 계승하기 위해 훈련시키는 제자를 '츠구코'라고 부릅니다."
+        exp: "정발판 기준 주의 공식 후계자를 '츠구코'라고 부릅니다."
       },
       {
         category: "혈귀와 혈귀술",
-        q: "상현 6 규타로와 다키 남매를 완벽하게 절명시키기 위한 조건은?",
+        q: "상현 6 규타로와 다키 남매를 완벽하게 절명시키기 위한 필수 조건은?",
         options: ["두 사람의 목을 거의 동시에 베어야 한다", "규타로의 심장과 다키의 목을 파괴해야 한다", "다키를 먼저 소멸시킨 뒤 규타로를 베어야 한다", "독을 주입한 뒤 태양빛에 노출시켜야 한다"],
         answerText: "두 사람의 목을 거의 동시에 베어야 한다",
-        exp: "다키와 규타로는 한 몸과 같아서 둘의 목을 동시에 베어야 완전히 소멸합니다."
+        exp: "둘은 일체화되어 있어 거의 동시에 목을 베어야 완전히 소멸합니다."
       },
       {
         category: "귀살대 계급",
-        q: "귀살대의 10단계 계급 체계에서 신입 대원이 최종선별을 통과했을 때 받는 가장 첫 계급은?",
+        q: "귀살대 10단계 계급 중 신입 대원이 최종선별을 통과했을 때 받는 가장 첫 단계 계급은?",
         options: ["계", "갑", "정", "신"],
         answerText: "계",
-        exp: "귀살대 10단계 계급은 갑, 을, 병, 정, 무, 기, 경, 신, 임, 계 순이며, 가장 낮은 첫 단계는 '계'입니다."
+        exp: "갑, 을, 병, 정, 무, 기, 경, 신, 임, 계 순으로 가장 낮은 계급은 계입니다."
       },
       {
         category: "귀살대 지원",
-        q: "귀살대 본부와 대원들 사이에서 임무 지령을 말로 전달하는 조류의 명칭은?",
+        q: "귀살대 본부와 대원 사이에서 임무와 지령을 말로 전달하는 조류의 명칭은?",
         options: ["꺾쇠까마귀", "전령매", "흑철비둘기", "등꽃참새"],
         answerText: "꺾쇠까마귀",
-        exp: "정발판 공식 명칭으로 대원 각자에게 배정되어 지령을 전달하는 까마귀를 '꺾쇠까마귀'라고 부릅니다."
+        exp: "대원마다 1마리씩 배치되어 임무를 전달하는 조류는 꺾쇠까마귀입니다."
       },
       {
         category: "주와 무기",
-        q: "암주 히메지마 교메이가 강력한 괴력과 함께 휘두르는 일륜도의 형태는?",
+        q: "암주 히메지마 교메이가 강력한 괴력과 함께 휘두르는 특수 일륜도의 형태는?",
         options: ["사슬로 연결된 도끼와 철퇴", "거대한 대검", "양날의 거대 창", "강철 곤봉"],
         answerText: "사슬로 연결된 도끼와 철퇴",
-        exp: "히메지마 교메이는 도끼와 쇠가시 철퇴가 튼튼한 사슬로 연결된 특수 일륜도를 사용합니다."
+        exp: "교메이는 묵직한 도끼와 쇠가시 철퇴가 사슬로 연결된 무기를 구사합니다."
       },
       {
         category: "혈귀와 혈귀술",
-        q: "도공 마을 편에서 상현 4 한텐구의 분신들이 하나로 합체하여 만들어진 증오의 분신 이름은?",
+        q: "도공 마을 편에서 상현 4 한텐구의 분신들이 하나로 합체해 탄생한 증오의 화신 이름은?",
         options: ["조하쿠텐", "세키도", "카라쿠", "우로기"],
         answerText: "조하쿠텐",
-        exp: "한텐구의 희노애락 분신들이 합체하여 탄생한 증오의 화신은 조하쿠텐입니다."
+        exp: "희노애락 분신들이 합체하여 탄생한 증오의 분신은 조하쿠텐입니다."
       },
       {
         category: "호흡의 역사",
-        q: "츠기쿠니 요리이치가 창시하였으며 모든 호흡의 모태가 되는 최초의 호흡은?",
+        q: "츠기쿠니 요리이치가 창시하였으며 모든 전집중 호흡의 모태가 되는 최초의 호흡은?",
         options: ["해의 호흡", "태양의 호흡", "신성의 호흡", "원초의 호흡"],
         answerText: "해의 호흡",
-        exp: "요리이치가 창시한 최초의 호흡은 '해의 호흡'이며 이후 물, 화염, 번개, 바람, 바위로 파생되었습니다."
-      },
-      {
-        category: "귀살대 인물",
-        q: "코쵸우 시노부의 언니이자 전 화주였으며 혈귀와의 화합을 꿈꿨던 인물은?",
-        options: ["코쵸우 카나에", "코쵸우 아오이", "츠유리 카나오", "우부야시키 아마네"],
-        answerText: "코쵸우 카나에",
-        exp: "상현 2 도우마에게 목숨을 잃기 전까지 혈귀와의 평화를 바랐던 전 화주는 코쵸우 카나에입니다."
-      },
-      {
-        category: "주와 동료",
-        q: "사주 이구로 오바나이의 목에 항상 감겨있으며 눈 역할을 해주는 영리한 흰 뱀의 이름은?",
-        options: ["카부라마루", "시로마루", "오로치", "헤비마루"],
-        answerText: "카부라마루",
-        exp: "이구로 오바나이의 소중한 벗이자 전황 파악을 돕는 흰 뱀은 카부라마루입니다."
-      },
-      {
-        category: "혈귀와 혈귀술",
-        q: "상현 2 도우마가 부채를 휘두르며 펼치는 혈귀술의 핵심 속성은?",
-        options: ["치명적인 냉기와 얼음 가루", "맹독의 안개", "피의 부식성 액체", "초고열의 불꽃"],
-        answerText: "치명적인 냉기와 얼음 가루",
-        exp: "도우마는 자신의 피를 얼려 미세한 얼음 가루를 날리고 이를 마신 상대의 폐를 얼려 괴사시키는 냉기 혈귀술을 사용합니다."
+        exp: "최초로 탄생한 시초의 호흡은 '해의 호흡'입니다."
       },
       {
         category: "가문의 전승",
-        q: "카마도 탄지로 가문에서 대대로 전승된 제사의 춤이자 검술 호흡은?",
+        q: "카마도 탄지로 가문에서 매년 새해마다 불의 신에게 바치는 의식의 춤이자 검술 호흡은?",
         options: ["히노카미 카구라", "불꽃의 춤", "태양신무", "가구토의 춤"],
         answerText: "히노카미 카구라",
-        exp: "탄지로 가문이 불의 신에게 올리던 의식의 춤인 '히노카미 카구라'는 해의 호흡의 원형입니다."
+        exp: "카마도 가문이 제사의 춤으로 계승해 온 호흡은 히노카미 카구라입니다."
+      },
+      {
+        category: "혈귀와 혈귀술",
+        q: "상현 2 도우마가 부채를 휘두르며 펼치는 치명적인 혈귀술의 핵심 속성은?",
+        options: ["치명적인 냉기와 얼음 가루", "맹독의 안개", "피의 부식성 액체", "초고열의 불꽃"],
+        answerText: "치명적인 냉기와 얼음 가루",
+        exp: "도우마는 자신의 피를 얼려 폐를 괴사시키는 얼음 가루 혈귀술을 사용합니다."
+      },
+      {
+        category: "귀살대 인물",
+        q: "코쵸우 시노부의 언니이자 혈귀와의 평화로운 화합을 바랐던 전 화주의 이름은?",
+        options: ["코쵸우 카나에", "코쵸우 아오이", "츠유리 카나오", "우부야시키 아마네"],
+        answerText: "코쵸우 카나에",
+        exp: "상현 2 도우마에게 목숨을 잃기 전까지 혈귀와의 평화를 꿈꾼 전 화주는 카나에입니다."
+      },
+      {
+        category: "주와 동료",
+        q: "사주 이구로 오바나이의 목에 항상 감겨있으며 시각과 전황 파악을 보조하는 흰 뱀의 이름은?",
+        options: ["카부라마루", "시로마루", "오로치", "헤비마루"],
+        answerText: "카부라마루",
+        exp: "오바나이의 둘도 없는 벗이자 전투를 보조하는 영리한 흰 뱀은 카부라마루입니다."
       },
       {
         category: "귀살대 승급 규정",
-        q: "귀살대 계급 체계에서 최상위 계급인 '주'가 되기 위한 공식 조건 중 하나는?",
+        q: "귀살대 계급 체계에서 최상위 계급인 '주'로 승급하기 위한 공식 토벌 조건은?",
         options: ["십이귀월 1체를 쓰러뜨리거나 일반 혈귀 50체를 토벌한다", "최종선별에서 수석을 차지하고 1년을 버틴다", "기존 주와의 일대일 대결에서 승리한다", "당주에게 직접 일륜도를 새로 받는다"],
         answerText: "십이귀월 1체를 쓰러뜨리거나 일반 혈귀 50체를 토벌한다",
-        exp: "귀살대 규정에 따르면 갑 계급의 대원이 십이귀월 1체를 격파하거나 일반 혈귀 50체를 토벌하면 주가 됩니다."
+        exp: "갑 계급의 대원이 십이귀월 1체 또는 일반 혈귀 50체를 격파하면 주가 됩니다."
+      },
+      /* 추가 및 변형 심화 문항 */
+      {
+        category: "인물과 전투",
+        q: "탄지로가 후각을 통해 혈귀의 목을 단칼에 벨 수 있는 공격 경로를 시각적으로 감지하는 것은?",
+        options: ["틈새의 실", "필살의 궤적", "혈귀의 맥박", "단죄의 선"],
+        answerText: "틈새의 실",
+        exp: "탄지로는 상대와의 빈틈이 일치할 때 냄새로 이어지는 '틈새의 실'을 봅니다."
+      },
+      {
+        category: "최종선별 수련",
+        q: "사기리 산에서 탄지로가 최종선별 참가를 허락받기 위해 일륜도로 베어내야 했던 거대한 물체는?",
+        options: ["바위", "천년 고목", "강철 궤짝", "얼어붙은 폭포"],
+        answerText: "바위",
+        exp: "우로코다키는 거대한 바위를 벨 수 있게 되면 최종선별에 보내주겠다고 하였습니다."
+      },
+      {
+        category: "인물과 스승",
+        q: "아가츠마 젠이츠의 스승이자 과거 귀살대 명주로 활약했던 인물의 이름은?",
+        options: ["쿠와지마 지고로", "우로코다키 사콘지", "렌고쿠 신쥬로", "칸자키 진파치"],
+        answerText: "쿠와지마 지고로",
+        exp: "지고로는 젠이츠를 손자처럼 아끼며 벽력일섬을 완성하도록 지도한 스승입니다."
+      },
+      {
+        category: "귀살대 장비",
+        q: "탄지로가 쥐었을 때 일륜도의 칼날이 변한 고유의 색깔은?",
+        options: ["흑색", "심홍색", "청색", "황금색"],
+        answerText: "흑색",
+        exp: "일륜도는 주인의 적성에 따라 색이 변하며, 탄지로의 칼은 칠흑 같은 흑색으로 변했습니다."
+      },
+      {
+        category: "혈귀와 조력자",
+        q: "키부츠지 무잔의 지배에서 벗어나 혈귀를 사람으로 되돌리는 치료약을 연구하는 의사 혈귀는?",
+        options: ["타마요", "스사마루", "다키", "무카고"],
+        answerText: "타마요",
+        exp: "타마요는 무잔의 속박을 풀고 탄지로 남매를 적극적으로 돕는 의사 혈귀입니다."
+      },
+      {
+        category: "혈귀와 조력자",
+        q: "타마요를 충직하게 모시며 시각 공유 및 은신 부적을 구사하는 혈귀 조수의 이름은?",
+        options: ["유시로", "야하바", "루이", "고토"],
+        answerText: "유시로",
+        exp: "유시로는 부적을 이용해 시야를 왜곡하거나 은신하는 혈귀술을 사용합니다."
+      },
+      {
+        category: "귀살대 장비",
+        q: "도공 마을에서 탄지로의 일륜도를 매번 분노에 차서도 최고의 품질로 벼려주는 도공은?",
+        options: ["하가네즈카 호타루", "카나모리 코조", "텟친", "코테츠"],
+        answerText: "하가네즈카 호타루",
+        exp: "칼을 극진히 사랑하며 탄지로의 일륜도를 담당하는 도공은 하가네즈카 호타루입니다."
+      },
+      {
+        category: "귀살대 거점",
+        q: "부상당한 귀살대원들의 치료와 기능 회복 재활 훈련을 전담하는 충주 시노부의 거점은?",
+        options: ["나비저택", "등꽃의 집", "사기리 산장", "연화암"],
+        answerText: "나비저택",
+        exp: "부상 대원들의 치료와 재활 훈련이 이루어지는 곳은 나비저택입니다."
+      },
+      {
+        category: "주와 전투방식",
+        q: "풍주 시나즈가와 사네미가 날카로운 폭풍처럼 몰아치며 구사하는 고유 전집중 호흡은?",
+        options: ["바람의 호흡", "태풍의 호흡", "칼바람의 호흡", "돌풍의 호흡"],
+        answerText: "바람의 호흡",
+        exp: "사네미는 난폭하고도 정밀한 바람의 호흡을 구사합니다."
+      },
+      {
+        category: "주와 전투방식",
+        q: "음주 우즈이 텐겐이 적의 공격 패턴과 타이밍을 음악 악보처럼 파악해 해체하는 기술은?",
+        options: ["보면", "음률", "박자파악", "선율독해"],
+        answerText: "보면",
+        exp: "우즈이 텐겐은 적의 공격 습관을 음악 소리처럼 환산하여 공략하는 '보면'을 완성합니다."
+      },
+      {
+        category: "혈귀와 혈귀술",
+        q: "카마도 네즈코가 자신의 피를 태워 혈귀에게만 치명적인 불꽃 공격을 입히는 고유 혈귀술은?",
+        options: ["폭혈", "혈염", "연옥혈", "작열혈"],
+        answerText: "폭혈",
+        exp: "네즈코의 혈귀술 폭혈은 혈귀의 살점을 태우고 독을 정화하는 특성이 있습니다."
+      },
+      {
+        category: "혈귀와 전투",
+        q: "무한열차 편에서 200명의 승객을 인질로 삼고 열차 전체와 신체를 융합했던 하현 1 혈귀는?",
+        options: ["엔무", "로쿠로", "와쿠라바", "카마누에"],
+        answerText: "엔무",
+        exp: "상대를 깊은 수면과 악몽에 빠뜨리는 혈귀술을 구사한 하현 1은 엔무입니다."
+      },
+      {
+        category: "혈귀와 전투",
+        q: "나타구모 산에서 거미 가족을 거느리며 거짓 유대로 묶어두려 했던 하현 5 혈귀의 이름은?",
+        options: ["루이", "쿄우가이", "야하바", "스사마루"],
+        answerText: "루이",
+        exp: "강철 실을 다루며 가족의 유대에 집착했던 하현 5 혈귀는 루이입니다."
+      },
+      {
+        category: "최종선별의 원혼",
+        q: "사기리 산에서 탄지로의 수련을 도와주었던 우로코다키의 제자이자 혼령 소년의 이름은?",
+        options: ["사비토", "겐야", "무라타", "고토"],
+        answerText: "사비토",
+        exp: "과거 최종선별에서 다른 대원들을 구하고 손 혈귀에게 희생된 영혼은 사비토입니다."
+      },
+      {
+        category: "혈귀의 본거지",
+        q: "나키메의 비파 연주로 방과 복도가 끝없이 재편되는 혈귀들의 입체 요새는?",
+        options: ["무한성", "어둠의 미궁", "차원성", "나락궁"],
+        answerText: "무한성",
+        exp: "최종결전의 무대이자 무잔의 본거지인 이공간 요새는 무한성입니다."
       }
     ];
 
     /* =====================================================================
-       2. 비속어/성적 표현 검열 엔진
+       2. 비속어 검열 엔진
        ===================================================================== */
     const PROFANITY_PATTERNS = [
       /시[발벌빨바]/i, /씨[발벌빨바]/i, /ㅅㅂ/i, /ㅂㅅ/i, /병[신신]/i,
@@ -1060,7 +1174,7 @@ const firebaseConfig = {
     }
 
     /* =====================================================================
-       3. Web Audio API 레트로 사운드
+       3. Web Audio API 레트로 효과음
        ===================================================================== */
     class MobileAudioEngine {
       constructor() {
@@ -1113,37 +1227,79 @@ const firebaseConfig = {
       playFanfare() {
         if (this.muted) return;
         this.init();
-        [440, 554, 659, 880].forEach((freq, idx) => {
+        [440, 554, 659, 880, 1108].forEach((freq, idx) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           const now = this.ctx.currentTime + (idx * 0.09);
           osc.type = "triangle";
           osc.frequency.setValueAtTime(freq, now);
-          gain.gain.setValueAtTime(0.15, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start(now);
-          osc.stop(now + 0.28);
+          osc.stop(now + 0.3);
         });
       }
     }
     const audio = new MobileAudioEngine();
 
     /* =====================================================================
-       4. 게임 루프 & 실시간 데이터베이스 연동
+       4. 단계 잠금/해금 관리 & 게임 제어
        ===================================================================== */
     let currentQuizList = [];
     let currentIndex = 0;
     let score = 0;
     let combo = 0;
     let maxCombo = 0;
+    let correctCount = 0;
     let timerInterval = null;
     let timeLeft = 15;
     const QUESTION_TIME = 15;
+    let selectedStage = 1;
     let targetQuestionCount = 10;
     let newlySubmittedKey = null;
 
+    // 단계 해금 레벨 불러오기 (기본값: 1단계 오픈)
+    function getUnlockedStage() {
+      return parseInt(localStorage.getItem("kimet_quiz_unlocked_stage_v3") || "1", 10);
+    }
+
+    function setUnlockedStage(stageNum) {
+      localStorage.setItem("kimet_quiz_unlocked_stage_v3", stageNum.toString());
+    }
+
+    function updateStageCardsUI() {
+      const unlocked = getUnlockedStage();
+
+      // 2단계
+      const card2 = document.getElementById("cardStage2");
+      const badge2 = document.getElementById("badgeStage2");
+      if (unlocked >= 2) {
+        card2.classList.remove("locked");
+        badge2.className = "mode-pill open";
+        badge2.textContent = "도전 가능";
+      } else {
+        card2.classList.add("locked");
+        badge2.className = "mode-pill lock-badge";
+        badge2.textContent = "잠김 (만점 필요)";
+      }
+
+      // 3단계
+      const card3 = document.getElementById("cardStage3");
+      const badge3 = document.getElementById("badgeStage3");
+      if (unlocked >= 3) {
+        card3.classList.remove("locked");
+        badge3.className = "mode-pill open";
+        badge3.textContent = "도전 가능";
+      } else {
+        card3.classList.add("locked");
+        badge3.className = "mode-pill lock-badge";
+        badge3.textContent = "잠김 (만점 필요)";
+      }
+    }
+
+    // DOM 참조
     const screenStart = document.getElementById("screenStart");
     const screenQuiz = document.getElementById("screenQuiz");
     const screenResult = document.getElementById("screenResult");
@@ -1165,6 +1321,7 @@ const firebaseConfig = {
     const resultCorrectCount = document.getElementById("resultCorrectCount");
     const resultAccuracy = document.getElementById("resultAccuracy");
     const resultMaxCombo = document.getElementById("resultMaxCombo");
+    const stageNoticeBanner = document.getElementById("stageNoticeBanner");
     const playerNameInput = document.getElementById("playerNameInput");
     const btnSubmitRank = document.getElementById("btnSubmitRank");
     const filterWarningMsg = document.getElementById("filterWarningMsg");
@@ -1175,19 +1332,29 @@ const firebaseConfig = {
     function showToast(msg) {
       toastMsg.textContent = msg;
       toastMsg.classList.add("show");
-      setTimeout(() => toastMsg.classList.remove("show"), 2200);
+      setTimeout(() => toastMsg.classList.remove("show"), 2300);
     }
 
-    // 모드 선택
+    // 모드 선택 (잠금 체크)
     document.querySelectorAll(".mode-item").forEach(item => {
       item.addEventListener("click", () => {
+        const stageNum = parseInt(item.getAttribute("data-stage"), 10);
+        const unlocked = getUnlockedStage();
+
+        if (stageNum > unlocked) {
+          audio.playWrong();
+          showToast(`이전 단계를 100% 만점으로 통과해야 입장할 수 있습니다!`);
+          return;
+        }
+
         document.querySelectorAll(".mode-item").forEach(m => m.classList.remove("selected"));
         item.classList.add("selected");
+        selectedStage = stageNum;
         targetQuestionCount = parseInt(item.getAttribute("data-count"), 10);
       });
     });
 
-    // 피셔-예이츠 셔플 알고리즘
+    // 배열 셔플
     function shuffleArray(arr) {
       const copy = [...arr];
       for (let i = copy.length - 1; i > 0; i--) {
@@ -1197,12 +1364,13 @@ const firebaseConfig = {
       return copy;
     }
 
-    // 퀴즈 시작 (보기 순서 무작위 셔플)
+    // 퀴즈 시작
     document.getElementById("btnStartQuiz").addEventListener("click", () => {
       audio.init();
 
-      const selectedQuestions = shuffleArray(QUIZ_DATABASE).slice(0, targetQuestionCount);
-      currentQuizList = selectedQuestions.map(item => {
+      // 전체 풀에서 모드별 문항 수만큼 무작위 추출
+      const sampled = shuffleArray(QUIZ_DATABASE).slice(0, targetQuestionCount);
+      currentQuizList = sampled.map(item => {
         const shuffledOpts = shuffleArray(item.options);
         return {
           category: item.category,
@@ -1217,6 +1385,7 @@ const firebaseConfig = {
       score = 0;
       combo = 0;
       maxCombo = 0;
+      correctCount = 0;
       newlySubmittedKey = null;
 
       screenStart.classList.remove("active");
@@ -1247,6 +1416,7 @@ const firebaseConfig = {
         optionsContainer.appendChild(btn);
       });
 
+      // 15초 카운트다운
       timeLeft = QUESTION_TIME;
       timerBar.style.width = "100%";
       const step = 100;
@@ -1261,6 +1431,7 @@ const firebaseConfig = {
       }, step);
     }
 
+    // 정답 선택 및 스피드 배점 연산
     function selectOption(selectedIdx) {
       clearInterval(timerInterval);
       const current = currentQuizList[currentIndex];
@@ -1270,14 +1441,27 @@ const firebaseConfig = {
       if (selectedIdx === current.answer) {
         buttons[selectedIdx].classList.add("correct");
         combo++;
+        correctCount++;
         if (combo > maxCombo) maxCombo = combo;
-        const timeBonus = Math.round(timeLeft * 15);
+
+        // ★ 시간 배점 공식:
+        // 1. 기본 점수 200점
+        // 2. 남은 시간(초) * 20점 (최대 +300점)
+        // 3. 3초 이내 응답 시 광속 보너스 +100점
+        // 4. 콤보 보너스 (combo - 1) * 35점
+        const baseScore = 200;
+        const timeBonus = Math.round(timeLeft * 20);
+        const quickBonus = (timeLeft >= 12.0) ? 100 : 0;
         const comboBonus = (combo - 1) * 35;
-        const gain = 300 + timeBonus + comboBonus;
+        const gain = baseScore + timeBonus + quickBonus + comboBonus;
+
         score += gain;
         audio.playCorrect();
 
-        feedbackTitle.textContent = `정답입니다! (+${gain}점)`;
+        let bonusText = `스피드 보너스 +${timeBonus}점`;
+        if (quickBonus > 0) bonusText += ` (광속 반응 +100점!)`;
+
+        feedbackTitle.textContent = `정답! (+${gain}점) [${bonusText}]`;
         feedbackTitle.style.color = "var(--accent-green)";
         feedbackDesc.textContent = current.exp;
       } else {
@@ -1309,7 +1493,7 @@ const firebaseConfig = {
 
       feedbackTitle.textContent = "시간 초과!";
       feedbackTitle.style.color = "var(--accent-crimson)";
-      feedbackDesc.textContent = "제한 시간 15초가 경과했습니다. " + current.exp;
+      feedbackDesc.textContent = "제한 시간 15초가 지났습니다. " + current.exp;
       hudCombo.textContent = `${combo}연속`;
       feedbackBox.style.display = "block";
 
@@ -1326,32 +1510,61 @@ const firebaseConfig = {
       }
     });
 
-    function calculateGrade(rate) {
-      if (rate >= 90) return "주";
-      if (rate >= 80) return "갑";
-      if (rate >= 70) return "을";
-      if (rate >= 60) return "병";
-      if (rate >= 50) return "정";
-      if (rate >= 40) return "무";
-      if (rate >= 30) return "기";
-      if (rate >= 20) return "경";
-      if (rate >= 10) return "신";
+    function calculateGrade(accuracy) {
+      if (accuracy >= 100) return "주";
+      if (accuracy >= 90) return "갑";
+      if (accuracy >= 80) return "을";
+      if (accuracy >= 70) return "병";
+      if (accuracy >= 60) return "정";
+      if (accuracy >= 50) return "무";
+      if (accuracy >= 40) return "기";
+      if (accuracy >= 30) return "경";
+      if (accuracy >= 20) return "신";
       return "계";
     }
 
+    // 결과 처리 및 단계 해금 로직
     function finishQuiz() {
       screenQuiz.classList.remove("active");
       screenResult.classList.add("active");
       audio.playFanfare();
 
-      const calculatedRate = Math.min(100, Math.max(10, Math.round((score / (currentQuizList.length * 400)) * 100)));
-      const grade = calculateGrade(calculatedRate);
+      const total = currentQuizList.length;
+      const accuracy = Math.round((correctCount / total) * 100);
+      const isPerfect = (correctCount === total);
+      const grade = calculateGrade(accuracy);
 
       resultGradeBadge.textContent = "귀살대 부여 계급: " + grade;
       resultFinalScore.textContent = score.toLocaleString();
-      resultAccuracy.textContent = `${calculatedRate}%`;
+      resultAccuracy.textContent = `${accuracy}%`;
       resultMaxCombo.textContent = `${maxCombo}회`;
-      resultCorrectCount.textContent = `${Math.round(calculatedRate * currentQuizList.length / 100)} / ${currentQuizList.length}`;
+      resultCorrectCount.textContent = `${correctCount} / ${total}`;
+
+      // 만점 판정 및 해금 업데이트
+      const unlocked = getUnlockedStage();
+      if (isPerfect) {
+        if (selectedStage === 1 && unlocked < 2) {
+          setUnlockedStage(2);
+          stageNoticeBanner.style.color = "var(--accent-green)";
+          stageNoticeBanner.innerHTML = "축하합니다! 1단계 전 문항 만점 달성!<br><strong>2단계(최종선별)가 해금되었습니다!</strong>";
+        } else if (selectedStage === 2 && unlocked < 3) {
+          setUnlockedStage(3);
+          stageNoticeBanner.style.color = "var(--accent-green)";
+          stageNoticeBanner.innerHTML = "축하합니다! 2단계 전 문항 만점 달성!<br><strong>3단계(주의 시련)가 해금되었습니다!</strong>";
+        } else if (selectedStage === 3) {
+          stageNoticeBanner.style.color = "var(--accent-gold)";
+          stageNoticeBanner.innerHTML = "대단합니다! 최종 3단계까지 전 문항 만점을 달성하여 귀살대의 주(柱)로 등극하셨습니다!";
+        } else {
+          stageNoticeBanner.style.color = "var(--accent-green)";
+          stageNoticeBanner.innerHTML = "축하합니다! 전 문항 만점을 달성하셨습니다!";
+        }
+      } else {
+        const diff = total - correctCount;
+        stageNoticeBanner.style.color = "var(--accent-crimson)";
+        stageNoticeBanner.innerHTML = `아쉽습니다! ${diff}문제를 틀려 만점을 놓쳤습니다.<br><strong>다음 단계로 넘어가려면 100% 만점을 달성해야 합니다!</strong>`;
+      }
+
+      updateStageCardsUI();
 
       arcadeEntryArea.style.display = "block";
       playerNameInput.value = "";
@@ -1360,14 +1573,13 @@ const firebaseConfig = {
       listenRealtimeLeaderboard();
     }
 
-    // 파이어베이스 실시간 상위 20인 리스너
+    // 파이어베이스 리스너
     function listenRealtimeLeaderboard() {
       if (!isFirebaseReady || !db) {
         renderLeaderboard([]);
         return;
       }
 
-      // 점수순으로 정렬하여 상위 20건 실시간 수신
       db.ref("leaderboard")
         .orderByChild("score")
         .limitToLast(20)
@@ -1376,7 +1588,6 @@ const firebaseConfig = {
           snapshot.forEach(child => {
             list.push({ key: child.key, ...child.val() });
           });
-          // 내림차순(높은 점수 먼저) 정렬
           list.sort((a, b) => b.score - a.score);
           renderLeaderboard(list);
         });
@@ -1431,7 +1642,7 @@ const firebaseConfig = {
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // 온라인 명예의 전당 등록
+    // 랭킹 등록
     btnSubmitRank.addEventListener("click", () => {
       const name = playerNameInput.value.trim();
       if (!name) {
@@ -1446,21 +1657,21 @@ const firebaseConfig = {
       }
 
       if (!isFirebaseReady || !db) {
-        showToast("파이어베이스 연결 정보를 먼저 입력해 주세요.");
+        showToast("파이어베이스 설정이 필요합니다.");
         return;
       }
 
       filterWarningMsg.style.display = "none";
-      const calculatedRate = Math.min(100, Math.max(10, Math.round((score / (currentQuizList.length * 400)) * 100)));
-      const grade = calculateGrade(calculatedRate);
+      const total = currentQuizList.length;
+      const accuracy = Math.round((correctCount / total) * 100);
+      const grade = calculateGrade(accuracy);
 
       btnSubmitRank.disabled = true;
       btnSubmitRank.textContent = "저장중";
 
-      // 파이어베이스 DB에 새 기록 밀어넣기 (Push)
       const newRef = db.ref("leaderboard").push();
       newRef.set({
-        name: name,
+        name: `${name} (${selectedStage}단계)`,
         grade: grade,
         score: score,
         createdAt: Date.now()
@@ -1474,22 +1685,25 @@ const firebaseConfig = {
         console.error(err);
         btnSubmitRank.disabled = false;
         btnSubmitRank.textContent = "기록";
-        showToast("등록 실패. 인터넷 또는 규칙을 확인하세요.");
+        showToast("등록 실패. 인터넷 상태를 확인하세요.");
       });
     });
 
     document.getElementById("btnRestart").addEventListener("click", () => {
       screenResult.classList.remove("active");
       screenStart.classList.add("active");
+      updateStageCardsUI();
     });
 
-    // 소리 토글
     const btnSound = document.getElementById("btnSound");
     btnSound.addEventListener("click", () => {
       audio.muted = !audio.muted;
       btnSound.textContent = audio.muted ? "소리 끔" : "소리 켬";
       showToast(audio.muted ? "음소거되었습니다." : "효과음이 켜졌습니다.");
     });
+
+    // 초기 단계 잠금 상태 반영
+    updateStageCardsUI();
   </script>
 </body>
 </html>
